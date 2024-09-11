@@ -1,11 +1,15 @@
-import React from 'react'
+import { Box, Title } from "@mantine/core";
 
-type Props = {}
+type Props = {};
 
-const AddJob = (props: Props) => {
+const AddJob = ({}: Props) => {
   return (
-    <div>Add Job</div>
-  )
-}
+    <Box p={"md"}>
+      <Title order={2} pb={"md"}>
+        Add new job
+      </Title>
+    </Box>
+  );
+};
 
-export default AddJob
+export default AddJob;
