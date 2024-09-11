@@ -11,7 +11,6 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Link } from "react-router-dom";
-import bbblury from "@/assets/images/bbblurry.svg";
 
 type Props = {};
 
@@ -40,12 +39,7 @@ const Login = (props: Props) => {
   };
 
   return (
-    <Box
-      style={{
-        backgroundImage: `url(${bbblury})`,
-      }}
-      className="blurry-background"
-    >
+    <Box className="blurry-background">
       <Paper radius="md" p="xl" w={"27rem"} withBorder {...props}>
         <Text size="xl" mb={"md"} fw={500}>
           Welcome back,
