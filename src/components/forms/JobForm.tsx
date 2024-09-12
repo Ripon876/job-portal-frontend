@@ -1,4 +1,11 @@
-import { Button, Group, Select, Stack, TextInput } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Select,
+  Stack,
+  Textarea,
+  TextInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 
 type FormValues = {
@@ -6,6 +13,7 @@ type FormValues = {
   position: string;
   contract: string;
   location: string;
+  shortDescription: string;
 };
 
 type JobFormProps = {
@@ -21,6 +29,8 @@ const JobForm = ({ initialValues, handleSubmit }: JobFormProps) => {
       position: (val) => (!val ? "Position is required" : null),
       contract: (val) => (!val ? "Contract is required" : null),
       location: (val) => (!val ? "Location is required" : null),
+      shortDescription: (val) =>
+        !val ? "Short Description is required" : null,
     },
   });
 
@@ -72,6 +82,21 @@ const JobForm = ({ initialValues, handleSubmit }: JobFormProps) => {
           }
           error={errors.location}
           radius="md"
+        />
+
+        <Textarea
+          required
+          label="Short Description"
+          description="Max 125 characters"
+          placeholder="Lorem ipsum odor amet, consectetuer adipiscing elit"
+          value={values.shortDescription}
+          onChange={(event) =>
+            setFieldValue("shortDescription", event.currentTarget.value)
+          }
+          error={errors.shortDescription}
+          radius="md"
+          rows={3}
+          maxLength={125}
         />
       </Stack>
 
