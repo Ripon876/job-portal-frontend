@@ -1,4 +1,5 @@
-import AdminJobsTable from "@/components/tables/AdminJobsTable";
+import JobsListing from "@/components/listings/JobsListing";
+// import AdminJobsTable from "@/components/tables/AdminJobsTable";
 import { Box, Title } from "@mantine/core";
 
 type Props = {};
@@ -9,7 +10,9 @@ const Jobs = ({}: Props) => {
       <Title order={2} pb={"md"}>
         Jobs
       </Title>
-      <AdminJobsTable />
+      {/* TODO: render compoennt based on user role */}
+      {/* <AdminJobsTable /> */}
+      <JobsListing />
     </Box>
   );
 };
