@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Box } from "@mantine/core";
+import { Box, Grid } from "@mantine/core";
 import JobsListingSearchBar from "./JobsListingSearchBar";
+import JobCard from "./JobCard";
 
 type Props = {};
 
@@ -16,7 +17,7 @@ const JobsListing = ({}: Props) => {
   };
 
   return (
-    <Box>
+    <Box pb={"lg"} mb={"lg"}>
       <JobsListingSearchBar
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -24,6 +25,24 @@ const JobsListing = ({}: Props) => {
         setFilters={setFilters}
         applyFilters={applyFilters}
       />
+
+      <Box mt={"md"}>
+        {/* TODO: render job cards dynamically */}
+        <Grid>
+          <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
+            <JobCard />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
+            <JobCard />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
+            <JobCard />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
+            <JobCard />
+          </Grid.Col>
+        </Grid>
+      </Box>
     </Box>
   );
 };
