@@ -52,6 +52,11 @@ const JobsListingSearchBar = ({
         style={{ flex: 1 }}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
+        styles={{
+          input: {
+            height: "45px",
+          },
+        }}
       />
 
       <Menu
@@ -65,6 +70,7 @@ const JobsListingSearchBar = ({
           <Button
             variant="light"
             onClick={() => setOpened((opened) => !opened)}
+            h={"45px"}
           >
             <Filter />
           </Button>
