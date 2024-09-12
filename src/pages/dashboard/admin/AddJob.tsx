@@ -1,13 +1,5 @@
-import {
-  Box,
-  Button,
-  Group,
-  Select,
-  Stack,
-  TextInput,
-  Title,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { Box, Title } from "@mantine/core";
+import JobForm from "@/components/forms/JobForm";
 
 type Props = {};
 type FormValues = {
@@ -18,23 +10,15 @@ type FormValues = {
 };
 
 const AddJob = ({}: Props) => {
-  const { values, errors, onSubmit, setFieldValue } = useForm<FormValues>({
-    initialValues: {
-      companyName: "",
-      position: "",
-      contract: "",
-      location: "",
-    },
-    validate: {
-      companyName: (val) => (!val ? "Name is required" : null),
-      position: (val) => (!val ? "Position is required" : null),
-      contract: (val) => (!val ? "Contract is required" : null),
-      location: (val) => (!val ? "Location is required" : null),
-    },
-  });
+  const initialValues = {
+    companyName: "",
+    position: "",
+    contract: "",
+    location: "",
+  };
 
   const handleSubmit = (data: FormValues) => {
-    console.log("login data", data);
+    console.log("add job data", data);
   };
 
   return (
@@ -43,63 +27,7 @@ const AddJob = ({}: Props) => {
         Add new job
       </Title>
       <Box>
-        <form onSubmit={onSubmit(handleSubmit)}>
-          <Stack>
-            <TextInput
-              required
-              label="Company Name"
-              placeholder="ABC Inc."
-              value={values.companyName}
-              onChange={(event) =>
-                setFieldValue("companyName", event.currentTarget.value)
-              }
-              error={errors.email && "Company name is required"}
-              radius="md"
-            />
-
-            <TextInput
-              required
-              label="Position"
-              placeholder="Software Engineer"
-              value={values.position}
-              onChange={(event) =>
-                setFieldValue("position", event.currentTarget.value)
-              }
-              error={errors.email && "Position is required"}
-              radius="md"
-            />
-
-            <Select
-              required
-              label="Contract"
-              placeholder="Full-time"
-              data={["Full-time", "Part-time"]}
-              value={values.contract}
-              onChange={(value) => setFieldValue("contract", value || "")}
-              error={errors.email && "Contract is required"}
-              radius="md"
-              withCheckIcon={false}
-            />
-
-            <TextInput
-              required
-              label="Location"
-              placeholder="New York"
-              value={values.location}
-              onChange={(event) =>
-                setFieldValue("location", event.currentTarget.value)
-              }
-              error={errors.email && "Location is required"}
-              radius="md"
-            />
-          </Stack>
-
-          <Group justify="space-between" mt="xl">
-            <Button type="submit" radius="xl" size="md">
-              Add
-            </Button>
-          </Group>
-        </form>
+        <JobForm initialValues={initialValues} handleSubmit={handleSubmit} />
       </Box>
     </Box>
   );
