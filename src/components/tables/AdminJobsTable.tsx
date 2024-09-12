@@ -1,37 +1,13 @@
 import { Table, Pagination, Box, Button, Menu, rem } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
-const Actions = ({ job }: { job: any }) => {
-  return (
-    <Menu withArrow shadow="md" offset={-5}>
-      <Menu.Target>
-        <Button variant="transparent" c={"dark"}>
-          <Ellipsis style={{ width: rem(20), height: rem(20) }} />
-        </Button>
-      </Menu.Target>
-      <Menu.Dropdown py={"md"} px={"sm"}>
-        <Menu.Item
-          leftSection={<Pencil style={{ width: rem(14), height: rem(14) }} />}
-          component={Link}
-          to={`/dashboard/jobs/${job.id}/edit`}
-        >
-          Edit
-        </Menu.Item>
-        <Menu.Item
-          leftSection={<Trash2 style={{ width: rem(14), height: rem(14) }} />}
-          color="red"
-        >
-          Delete
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
-  );
-};
+import DeleteModal from "../modals/DeleteModal";
 
 const AdminJobsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [opened, { open, close }] = useDisclosure(false);
   const jobs = [
     {
       id: 1,
@@ -63,6 +39,39 @@ const AdminJobsTable = () => {
     },
   ];
 
+  const handleDelete = (job?: any) => {
+    console.log("delete job", job);
+    close();
+  };
+
+  const Actions = ({ job }: { job: any }) => {
+    return (
+      <Menu withArrow shadow="md" offset={-5}>
+        <Menu.Target>
+          <Button variant="transparent" c={"dark"}>
+            <Ellipsis style={{ width: rem(20), height: rem(20) }} />
+          </Button>
+        </Menu.Target>
+        <Menu.Dropdown py={"md"} px={"sm"}>
+          <Menu.Item
+            leftSection={<Pencil style={{ width: rem(14), height: rem(14) }} />}
+            component={Link}
+            to={`/dashboard/jobs/${job.id}/edit`}
+          >
+            Edit
+          </Menu.Item>
+          <Menu.Item
+            leftSection={<Trash2 style={{ width: rem(14), height: rem(14) }} />}
+            color="red"
+            onClick={() => open()}
+          >
+            Delete
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    );
+  };
+
   const rows = jobs.map((job) => (
     <Table.Tr key={job.id}>
       <Table.Td>{job.companyName}</Table.Td>
@@ -77,6 +86,12 @@ const AdminJobsTable = () => {
 
   return (
     <Box>
+      <DeleteModal
+        opened={opened}
+        close={close}
+        title="Delete Job"
+        confirm={handleDelete}
+      />
       <Table mb="lg">
         <Table.Thead>
           <Table.Tr>
