@@ -7,6 +7,7 @@ type FormValues = {
   position: string;
   contract: string;
   location: string;
+  shortDescription: string;
 };
 
 const EditJob = ({}: Props) => {
@@ -15,6 +16,8 @@ const EditJob = ({}: Props) => {
     position: "Software Engineer",
     contract: "Full-time",
     location: "New York",
+    shortDescription:
+      "We are looking for a software engineer to join our team.",
   };
 
   const handleSubmit = (data: FormValues) => {
