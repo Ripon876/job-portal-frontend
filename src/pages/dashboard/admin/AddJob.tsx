@@ -7,7 +7,6 @@ type FormValues = {
   position: string;
   contract: string;
   location: string;
-  shortDescription: string;
 };
 
 const AddJob = ({}: Props) => {
@@ -16,7 +15,6 @@ const AddJob = ({}: Props) => {
     position: "",
     contract: "",
     location: "",
-    shortDescription: "",
   };
 
   const handleSubmit = (data: FormValues) => {

@@ -1,13 +1,4 @@
-import {
-  Card,
-  Image,
-  Text,
-  Badge,
-  Button,
-  Group,
-  Box,
-  Flex,
-} from "@mantine/core";
+import { Card, Image, Text, Badge, Button, Group, Box } from "@mantine/core";
 import jobCardImage from "@/assets/images/job-card.svg";
 
 type Props = {};
@@ -31,16 +22,9 @@ const JobCard = ({}: Props) => {
         </Badge>
       </Group>
 
-      <Flex direction={"column"} justify={"space-between"} flex={1}>
-        <Text size="sm" c="dimmed">
-          Lorem ipsum odor amet, consectetuer adipiscing elit. Enim duis
-          ultricies euismod vel in ultrices massa elit.Enim duis ultricies
-        </Text>
-
-        <Button color="blue" mt="md" w={"max-content"} radius="xl">
-          Apply
-        </Button>
-      </Flex>
+      <Button color="blue" mt="md" w={"max-content"} radius="xl">
+        Apply
+      </Button>
     </Card>
   );
 };
