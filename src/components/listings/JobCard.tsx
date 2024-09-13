@@ -18,7 +18,7 @@ const JobCard = ({}: Props) => {
           </Text>
         </Box>
         <Badge color="blue" variant="light">
-          Full-time
+          Full time
         </Badge>
       </Group>
 

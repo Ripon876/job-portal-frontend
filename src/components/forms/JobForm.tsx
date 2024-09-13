@@ -54,8 +54,8 @@ const JobForm = ({ initialValues, handleSubmit }: JobFormProps) => {
         <Select
           required
           label="Contract"
-          placeholder="Full-time"
-          data={["Full-time", "Part-time"]}
+          placeholder="Full time"
+          data={["Full time", "Part time"]}
           value={values.contract}
           onChange={(value) => setFieldValue("contract", value || "")}
           error={errors.contract}

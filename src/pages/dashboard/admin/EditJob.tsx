@@ -13,7 +13,7 @@ const EditJob = ({}: Props) => {
   const initialValues = {
     companyName: "XYZ Inc.",
     position: "Software Engineer",
-    contract: "Full-time",
+    contract: "Full time",
     location: "New York",
   };
 

@@ -101,8 +101,8 @@ const JobsListingSearchBar = ({
             }
           >
             <Flex direction={"column"} gap={"xs"}>
-              <Radio value="Full-time" label="Full-time" styles={radioStyle} />
-              <Radio value="Part-time" label="Part-time" styles={radioStyle} />
+              <Radio value="Full time" label="Full time" styles={radioStyle} />
+              <Radio value="Part time" label="Part time" styles={radioStyle} />
             </Flex>
           </Radio.Group>
 
