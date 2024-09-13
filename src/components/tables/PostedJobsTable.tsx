@@ -1,14 +1,15 @@
-import { Table, Pagination, Box, Button, Menu, rem } from "@mantine/core";
+import { Pagination, Box, Button, Menu, rem } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import DeleteModal from "../modals/DeleteModal";
+import JobsTable, { Job } from "./JobsTable";
 
-const AdminJobsTable = () => {
+const PostedJobsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [opened, { open, close }] = useDisclosure(false);
-  const jobs = [
+  const jobs: Job[] = [
     {
       id: 1,
       companyName: "Acme Corp",
@@ -72,18 +73,6 @@ const AdminJobsTable = () => {
     );
   };
 
-  const rows = jobs.map((job) => (
-    <Table.Tr key={job.id}>
-      <Table.Td>{job.companyName}</Table.Td>
-      <Table.Td>{job.position}</Table.Td>
-      <Table.Td>{job.contract}</Table.Td>
-      <Table.Td>{job.location}</Table.Td>
-      <Table.Td ta={"end"}>
-        <Actions job={job} />
-      </Table.Td>
-    </Table.Tr>
-  ));
-
   return (
     <Box>
       <DeleteModal
@@ -92,18 +81,7 @@ const AdminJobsTable = () => {
         title="Delete Job"
         confirm={handleDelete}
       />
-      <Table mb="lg">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Company name</Table.Th>
-            <Table.Th>Position</Table.Th>
-            <Table.Th>Contract</Table.Th>
-            <Table.Th>Location</Table.Th>
-            <Table.Th ta={"end"}>Actions</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>{rows}</Table.Tbody>
-      </Table>
+      <JobsTable jobs={jobs} Actions={Actions} />
       <Box display="flex" style={{ justifyContent: "end" }}>
         <Pagination total={10} value={currentPage} onChange={setCurrentPage} />
       </Box>
@@ -111,4 +89,4 @@ const AdminJobsTable = () => {
   );
 };
 
-export default AdminJobsTable;
+export default PostedJobsTable;
