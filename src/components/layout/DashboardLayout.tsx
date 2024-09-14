@@ -2,26 +2,26 @@ import { List, ListPlus } from "lucide-react";
 import { useDisclosure } from "@mantine/hooks";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { AppShell, Burger, Group, NavLink, Title } from "@mantine/core";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 type Props = {};
 
 const DashboardLayout = ({}: Props) => {
   const [opened, { toggle }] = useDisclosure();
+  const { user } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
-
-  // TODO: Check if user is authenticated and get user role
-  const userRole = "admin";
 
   const items = () => {
     const navItems = [{ label: "Jobs", link: "/dashboard/jobs", icon: List }];
 
-    if (userRole === "admin") {
+    if (user?.role === "admin") {
       navItems.push({
         label: "Add new job",
         link: "/dashboard/jobs/add",
         icon: ListPlus,
       });
-    } else if (userRole === "user") {
+    } else {
       navItems.push({
         label: "Applied Jobs",
         link: "/dashboard/jobs/applied",
