@@ -4,14 +4,26 @@ import JobsListingSearchBar from "./JobsListingSearchBar";
 import JobCard from "./JobCard";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { fetchJobs, setLimit, setPage } from "@/store/job/jobSlice";
+import {
+  applyForJob,
+  fetchJobs,
+  Job,
+  resetError,
+  resetSuccess,
+  setApplyingFor,
+  setLimit,
+  setPage,
+} from "@/store/job/jobSlice";
 import { useDebouncedState } from "@mantine/hooks";
+import toast from "react-hot-toast";
 
 type Props = {};
 
 const JobsListing = ({}: Props) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { jobs, meta, loading } = useSelector((state: RootState) => state.job);
+  const { jobs, meta, loading, error, success } = useSelector(
+    (state: RootState) => state.job
+  );
   const page = useSelector((state: RootState) => state.job.meta.page);
   const [searchQuery, setSearchQuery] = useDebouncedState("", 500);
   const [query, setQuery] = useState("");
@@ -36,6 +48,11 @@ const JobsListing = ({}: Props) => {
     }
   };
 
+  const apply = (job: Job) => {
+    dispatch(setApplyingFor(job._id));
+    dispatch(applyForJob({ id: job._id }));
+  };
+
   useEffect(() => {
     dispatch(setLimit(9));
   }, []);
@@ -47,6 +64,21 @@ const JobsListing = ({}: Props) => {
   useEffect(() => {
     setSearchQuery(query);
   }, [query]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+
+    if (success && !loading) {
+      toast.success("Apply for job successfully");
+    }
+
+    return () => {
+      dispatch(resetError());
+      dispatch(resetSuccess());
+    };
+  }, [error, loading]);
 
   return (
     <Box pb={"lg"} mb={"lg"}>
@@ -70,7 +102,7 @@ const JobsListing = ({}: Props) => {
         <Grid>
           {jobs.map((job) => (
             <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-              <JobCard job={job} />
+              <JobCard job={job} apply={apply} />
             </Grid.Col>
           ))}
         </Grid>

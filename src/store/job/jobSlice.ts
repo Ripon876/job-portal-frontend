@@ -26,6 +26,7 @@ interface ApiReponse {
 interface JobsState {
   jobs: Job[];
   job: Job | {};
+  applyingFor: string;
   loading: boolean;
   error: string | null;
   success: boolean;
@@ -36,6 +37,7 @@ interface JobsState {
 const initialState: JobsState = {
   jobs: [],
   job: {},
+  applyingFor: "",
   loading: false,
   error: null,
   success: false,
@@ -129,6 +131,15 @@ export const deleteJob = createAsyncThunk<string, string>(
   }
 );
 
+// Apply for a job
+export const applyForJob = createAsyncThunk<Job, { id: string }>(
+  "jobs/applyForJob",
+  async ({ id }) => {
+    const response = await apiClient.post(`/jobs/${id}/apply`);
+    return response.data.data;
+  }
+);
+
 const jobSlice = createSlice({
   name: "jobs",
   initialState,
@@ -138,6 +149,9 @@ const jobSlice = createSlice({
     },
     setLimit(state, action: PayloadAction<number>) {
       state.meta.limit = action.payload;
+    },
+    setApplyingFor(state, action: PayloadAction<string>) {
+      state.applyingFor = action.payload;
     },
     resetError(state) {
       state.error = null;
@@ -234,11 +248,30 @@ const jobSlice = createSlice({
         state.success = false;
         state.loading = false;
         state.error = action.error.message ?? "Failed to delete job";
+      })
+      .addCase(applyForJob.pending, (state) => {
+        state.loading = true;
+        state.success = false;
+        state.error = null;
+      })
+      .addCase(applyForJob.fulfilled, (state, action) => {
+        // state.jobs = state.jobs.filter((job) => job._id !== action.payload);
+        state.loading = false;
+        state.success = true;
+        state.error = null;
+        state.applyingFor = "";
+      })
+      .addCase(applyForJob.rejected, (state, action) => {
+        state.success = false;
+        state.loading = false;
+        state.applyingFor = "";
+        state.error = action.error.message ?? "Failed to delete job";
       });
   },
 });
 
-export const { resetError, resetSuccess, setPage, setLimit } = jobSlice.actions;
+export const { resetError, resetSuccess, setPage, setLimit, setApplyingFor } =
+  jobSlice.actions;
 
 // Export the reducer
 export default jobSlice.reducer;
