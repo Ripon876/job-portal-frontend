@@ -49,6 +49,8 @@ const Login = (props: Props) => {
   };
 
   useEffect(() => {
+    dispatch(resetError());
+    
     if (error && !loading) {
       toast.error(error);
     }

@@ -4,7 +4,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 interface AuthState {
   isAuthenticated: boolean;
-  user: null | { email: string; token: string, role:  "user" | "admin" };
+  user: null | { email: string; token: string; role: "user" | "admin" };
   loading: boolean;
   error: null | string;
   success: boolean;
@@ -13,6 +13,7 @@ interface AuthState {
 interface ErrorPayload {
   status: string;
   message: string;
+  errors: { msg: string }[];
 }
 
 const initialState: AuthState = {
@@ -117,9 +118,11 @@ const authSlice = createSlice({
         state.success = true;
       })
       .addCase(login.rejected, (state, action) => {
+        const paylod = action.payload as ErrorPayload;
+
         state.loading = false;
         state.error =
-          (action.payload as ErrorPayload).message || "Login failed";
+          paylod?.errors?.[0].msg || paylod.message || "Login failed";
       })
       .addCase(signup.pending, (state) => {
         state.loading = true;
@@ -130,9 +133,11 @@ const authSlice = createSlice({
         state.success = true;
       })
       .addCase(signup.rejected, (state, action) => {
+        const paylod = action.payload as ErrorPayload;
+
         state.loading = false;
         state.error =
-          (action.payload as ErrorPayload).message || "Signup failed";
+          paylod?.errors?.[0].msg || paylod.message || "Signup failed";
       })
       .addCase(fetchUser.pending, (state) => {
         state.loading = true;
