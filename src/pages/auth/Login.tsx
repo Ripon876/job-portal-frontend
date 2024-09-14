@@ -10,7 +10,12 @@ import {
   Box,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { login, resetError } from "@/store/auth/authSlice";
+import { AppDispatch, RootState } from "@/store/store";
 
 type Props = {};
 
@@ -20,6 +25,11 @@ type FormValues = {
 };
 
 const Login = (props: Props) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, loading, error } = useSelector(
+    (state: RootState) => state.auth
+  );
   const { values, errors, onSubmit, setFieldValue } = useForm<FormValues>({
     initialValues: {
       email: "",
@@ -35,8 +45,22 @@ const Login = (props: Props) => {
   });
 
   const handleSubmit = (data: FormValues) => {
-    console.log("login data", data);
+    dispatch(login(data));
   };
+
+  useEffect(() => {
+    if (error && !loading) {
+      toast.error(error);
+    }
+
+    if (isAuthenticated && !loading) {
+      toast.success("Login successful");
+      navigate("/dashboard/jobs");
+    }
+    return () => {
+      dispatch(resetError());
+    };
+  }, [error, isAuthenticated, user]);
 
   return (
     <Box className="blurry-background">
@@ -85,7 +109,7 @@ const Login = (props: Props) => {
             >
               Don't have an account? Register
             </Anchor>
-            <Button type="submit" radius="xl" size="md">
+            <Button type="submit" radius="xl" size="md" loading={loading}>
               Login
             </Button>
           </Group>

@@ -5,11 +5,17 @@ import "./index.css";
 import { MantineProvider } from "@mantine/core";
 import { RouterProvider } from "react-router-dom";
 import router from "./router/index.tsx";
+import { Provider } from "react-redux";
+import { store } from "./store/store.ts";
+import { Toaster } from "react-hot-toast";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <MantineProvider>
-      <RouterProvider router={router} />
+      <Provider store={store}>
+        <RouterProvider router={router} />
+        <Toaster position="top-right" />
+      </Provider>
     </MantineProvider>
   </StrictMode>
 );
