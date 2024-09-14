@@ -12,7 +12,7 @@ type Props = {
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   filters: Filters;
   setFilters: React.Dispatch<React.SetStateAction<Filters>>;
-  applyFilters: () => void;
+  updateSearchFitlers: (clear?: boolean) => void;
 };
 
 const JobsListingSearchBar = ({
@@ -20,7 +20,7 @@ const JobsListingSearchBar = ({
   setSearchQuery,
   filters,
   setFilters,
-  applyFilters,
+  updateSearchFitlers,
 }: Props) => {
   const [opened, setOpened] = useState(false);
   const canApply = filters.location || filters.contract;
@@ -31,6 +31,7 @@ const JobsListingSearchBar = ({
       contract: "",
     });
     setOpened(false);
+    updateSearchFitlers(true);
   };
 
   const radioStyle: any = {
@@ -42,7 +43,7 @@ const JobsListingSearchBar = ({
 
   const onApplyFilters = () => {
     setOpened(false);
-    applyFilters();
+    updateSearchFitlers();
   };
 
   return (
@@ -57,6 +58,7 @@ const JobsListingSearchBar = ({
             height: "45px",
           },
         }}
+        placeholder="Search by company name"
       />
 
       <Menu

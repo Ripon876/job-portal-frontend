@@ -1,9 +1,12 @@
 import { Card, Image, Text, Badge, Button, Group, Box } from "@mantine/core";
 import jobCardImage from "@/assets/images/job-card.svg";
+import { Job } from "@/store/job/jobSlice";
 
-type Props = {};
+type Props = {
+  job: Job;
+};
 
-const JobCard = ({}: Props) => {
+const JobCard = ({ job }: Props) => {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder mih={"100%"}>
       <Card.Section>
@@ -11,14 +14,17 @@ const JobCard = ({}: Props) => {
       </Card.Section>
 
       <Group justify="space-between" mt="md" mb="xs" align="">
-        <Box>
-          <Text fw={500}>Frontend Developer</Text>
+        <Box maw={"65%"}>
+          <Text fw={500}>{job.position}</Text>
           <Text size="sm" c="dimmed">
-            XYZ Company
+            {job.companyName}
+          </Text>
+          <Text size="sm" c="dimmed">
+            {job.location}
           </Text>
         </Box>
         <Badge color="blue" variant="light">
-          Full time
+          {job.contract}
         </Badge>
       </Group>
 

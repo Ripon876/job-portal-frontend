@@ -47,10 +47,25 @@ const initialState: JobsState = {
 };
 
 // fetch all jobs
-export const fetchJobs = createAsyncThunk<Job[]>("jobs/fetchJobs", async () => {
-  const response = await apiClient.get("/jobs");
-  return response.data;
-});
+export const fetchJobs = createAsyncThunk<ApiReponse, Record<string, any>>(
+  "jobs/fetchJobs",
+  async (query: Record<string, any>, { getState }) => {
+    const state = getState() as RootState;
+    const { page, limit } = state.job.meta;
+    let queryString = "";
+
+    for (const key in query) {
+      if (query[key]) {
+        queryString += `&${key}=${query[key]}`;
+      }
+    }
+
+    const response = await apiClient.get(
+      `/jobs?page=${page}&limit=${limit}${queryString}`
+    );
+    return response.data;
+  }
+);
 
 // Get posted jobs for admin
 export const fetchPostedJobs = createAsyncThunk<ApiReponse>(
@@ -121,6 +136,9 @@ const jobSlice = createSlice({
     setPage(state, action: PayloadAction<number>) {
       state.meta.page = action.payload;
     },
+    setLimit(state, action: PayloadAction<number>) {
+      state.meta.limit = action.payload;
+    },
     resetError(state) {
       state.error = null;
     },
@@ -141,9 +159,10 @@ const jobSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchJobs.fulfilled, (state, action: PayloadAction<Job[]>) => {
+      .addCase(fetchJobs.fulfilled, (state, action) => {
         state.loading = false;
-        state.jobs = action.payload;
+        state.jobs = action.payload.data as Job[];
+        state.meta = action.payload.meta as Meta;
       })
       .addCase(fetchJobs.rejected, (state, action) => {
         state.loading = false;
@@ -219,7 +238,7 @@ const jobSlice = createSlice({
   },
 });
 
-export const { resetError, resetSuccess, setPage } = jobSlice.actions;
+export const { resetError, resetSuccess, setPage, setLimit } = jobSlice.actions;
 
 // Export the reducer
 export default jobSlice.reducer;
