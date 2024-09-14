@@ -9,7 +9,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteJob,
-  fetchPostedJobs,
+  fetchJobs,
   Job,
   resetError,
   resetSuccess,
@@ -45,7 +45,7 @@ const PostedJobsTable = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchPostedJobs());
+    dispatch(fetchJobs({ postedOnly: 1 }));
   }, [page]);
 
   useEffect(() => {

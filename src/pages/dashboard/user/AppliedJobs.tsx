@@ -1,16 +1,13 @@
+import JobsListing from "@/components/listings/JobsListing";
 import { Box, Title } from "@mantine/core";
-import AppliedJobsTable from "@/components/tables/AppliedJobsTable";
 
-type Props = {};
-
-const AppliedJobs = ({}: Props) => {
+const AppliedJobs = () => {
   return (
     <Box p={"md"} maw={"1024px"} mx={"auto"}>
       <Title order={2} pb={"md"}>
         Applied Jobs
       </Title>
-
-      <AppliedJobsTable />
+      <JobsListing appliedOnly/>
     </Box>
   );
 };

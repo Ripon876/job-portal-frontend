@@ -7,10 +7,13 @@ import { useSelector } from "react-redux";
 type Props = {
   job: Job;
   apply: (job: Job) => void;
+  appliedOnly?: boolean;
 };
 
-const JobCard = ({ job, apply }: Props) => {
-  const { loading, applyingFor } = useSelector((state: RootState) => state.job);
+const JobCard = ({ job, apply, appliedOnly = false }: Props) => {
+  const { loading, applyingFor, appliedJobs } = useSelector(
+    (state: RootState) => state.job
+  );
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder mih={"100%"}>
@@ -40,8 +43,9 @@ const JobCard = ({ job, apply }: Props) => {
         radius="xl"
         loading={applyingFor === job._id && loading}
         onClick={() => apply(job)}
+        disabled={appliedOnly || appliedJobs.includes(job._id)}
       >
-        Apply
+        {appliedOnly || appliedJobs.includes(job._id) ? "Applied" : "Apply"}
       </Button>
     </Card>
   );

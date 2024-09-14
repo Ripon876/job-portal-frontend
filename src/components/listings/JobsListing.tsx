@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import {
   applyForJob,
+  fetchAppliedJobs,
   fetchJobs,
   Job,
   resetError,
@@ -17,9 +18,11 @@ import {
 import { useDebouncedState } from "@mantine/hooks";
 import toast from "react-hot-toast";
 
-type Props = {};
+type Props = {
+  appliedOnly?: boolean;
+};
 
-const JobsListing = ({}: Props) => {
+const JobsListing = ({ appliedOnly = false }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const { jobs, meta, loading, error, success } = useSelector(
     (state: RootState) => state.job
@@ -58,8 +61,22 @@ const JobsListing = ({}: Props) => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchJobs({ ...searchFitlers, companyName: searchQuery }));
+    const query: Record<string, any> = {
+      ...searchFitlers,
+      companyName: searchQuery,
+    };
+    if (appliedOnly) {
+      query.appliedOnly = 1;
+    }
+
+    dispatch(fetchJobs(query));
   }, [page, searchQuery, searchFitlers]);
+
+  useEffect(() => {
+    if (!appliedOnly) {
+      dispatch(fetchAppliedJobs());
+    }
+  }, [appliedOnly]);
 
   useEffect(() => {
     setSearchQuery(query);
@@ -102,7 +119,7 @@ const JobsListing = ({}: Props) => {
         <Grid>
           {jobs.map((job) => (
             <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-              <JobCard job={job} apply={apply} />
+              <JobCard job={job} apply={apply} appliedOnly={appliedOnly} />
             </Grid.Col>
           ))}
         </Grid>

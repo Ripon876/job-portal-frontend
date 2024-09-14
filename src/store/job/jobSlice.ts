@@ -1,4 +1,9 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  PayloadAction,
+  isAnyOf,
+} from "@reduxjs/toolkit";
 import { apiClient } from "@/apiClient";
 import { AxiosError } from "axios";
 import { RootState } from "../store";
@@ -27,6 +32,7 @@ interface JobsState {
   jobs: Job[];
   job: Job | {};
   applyingFor: string;
+  appliedJobs: string[];
   loading: boolean;
   error: string | null;
   success: boolean;
@@ -38,6 +44,7 @@ const initialState: JobsState = {
   jobs: [],
   job: {},
   applyingFor: "",
+  appliedJobs: [],
   loading: false,
   error: null,
   success: false,
@@ -48,7 +55,7 @@ const initialState: JobsState = {
   },
 };
 
-// fetch all jobs
+// fetch all jobs  - admin (posted only)
 export const fetchJobs = createAsyncThunk<ApiReponse, Record<string, any>>(
   "jobs/fetchJobs",
   async (query: Record<string, any>, { getState }) => {
@@ -64,20 +71,6 @@ export const fetchJobs = createAsyncThunk<ApiReponse, Record<string, any>>(
 
     const response = await apiClient.get(
       `/jobs?page=${page}&limit=${limit}${queryString}`
-    );
-    return response.data;
-  }
-);
-
-// Get posted jobs for admin
-export const fetchPostedJobs = createAsyncThunk<ApiReponse>(
-  "jobs/fetchPostedJobs",
-  async (_, { getState }) => {
-    const state = getState() as RootState;
-    const { page, limit } = state.job.meta;
-
-    const response = await apiClient.get(
-      `/jobs/admin?page=${page}&limit=${limit}`
     );
     return response.data;
   }
@@ -140,6 +133,15 @@ export const applyForJob = createAsyncThunk<Job, { id: string }>(
   }
 );
 
+// Fetch applied jobs
+export const fetchAppliedJobs = createAsyncThunk<Job[]>(
+  "jobs/fetchAppliedJobs",
+  async () => {
+    const response = await apiClient.get("/jobs?appliedOnly=1");
+    return response.data.data;
+  }
+);
+
 const jobSlice = createSlice({
   name: "jobs",
   initialState,
@@ -161,6 +163,22 @@ const jobSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addMatcher(
+      isAnyOf(
+        fetchJob.pending,
+        fetchJobs.pending,
+        postJob.pending,
+        updateJob.pending,
+        deleteJob.pending,
+        applyForJob.pending
+      ),
+      (state) => {
+        state.loading = true;
+        state.success = false;
+        state.error = null;
+      }
+    );
+
     builder
       .addCase(fetchJob.fulfilled, (state, action: PayloadAction<Job>) => {
         state.job = action.payload;
@@ -168,10 +186,6 @@ const jobSlice = createSlice({
       .addCase(fetchJob.rejected, (state, action) => {
         state.error = action.error.message ?? "Failed to fetch job";
         state.job = {};
-      })
-      .addCase(fetchJobs.pending, (state) => {
-        state.loading = true;
-        state.error = null;
       })
       .addCase(fetchJobs.fulfilled, (state, action) => {
         state.loading = false;
@@ -181,24 +195,6 @@ const jobSlice = createSlice({
       .addCase(fetchJobs.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? "Failed to fetch jobs";
-      })
-      .addCase(fetchPostedJobs.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchPostedJobs.fulfilled, (state, action) => {
-        state.loading = false;
-        state.jobs = action.payload.data as Job[];
-        state.meta = action.payload.meta as Meta;
-      })
-      .addCase(fetchPostedJobs.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message ?? "Failed to fetch jobs";
-      })
-      .addCase(postJob.pending, (state) => {
-        state.loading = true;
-        state.success = false;
-        state.error = null;
       })
       .addCase(postJob.fulfilled, (state, action: PayloadAction<Job>) => {
         state.loading = false;
@@ -210,11 +206,6 @@ const jobSlice = createSlice({
         state.success = false;
         state.loading = false;
         state.error = action.error.message ?? "Failed to fetch jobs";
-      })
-      .addCase(updateJob.pending, (state) => {
-        state.loading = true;
-        state.success = false;
-        state.error = null;
       })
       .addCase(updateJob.fulfilled, (state, action: PayloadAction<Job>) => {
         const index = state.jobs.findIndex(
@@ -233,11 +224,6 @@ const jobSlice = createSlice({
         state.loading = false;
         state.error = action.error.message ?? "Failed to update job";
       })
-      .addCase(deleteJob.pending, (state) => {
-        state.loading = true;
-        state.success = false;
-        state.error = null;
-      })
       .addCase(deleteJob.fulfilled, (state, action: PayloadAction<string>) => {
         state.jobs = state.jobs.filter((job) => job._id !== action.payload);
         state.loading = false;
@@ -249,13 +235,8 @@ const jobSlice = createSlice({
         state.loading = false;
         state.error = action.error.message ?? "Failed to delete job";
       })
-      .addCase(applyForJob.pending, (state) => {
-        state.loading = true;
-        state.success = false;
-        state.error = null;
-      })
       .addCase(applyForJob.fulfilled, (state, action) => {
-        // state.jobs = state.jobs.filter((job) => job._id !== action.payload);
+        state.appliedJobs.push(action.payload._id);
         state.loading = false;
         state.success = true;
         state.error = null;
@@ -265,11 +246,17 @@ const jobSlice = createSlice({
         state.success = false;
         state.loading = false;
         state.applyingFor = "";
-        state.error = action.error.message ?? "Failed to delete job";
+        state.error = action.error.message ?? "Failed to apply for job";
+      })
+      .addCase(fetchAppliedJobs.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.appliedJobs = action.payload?.map((job) => job._id);
       });
   },
 });
 
+// Export the action creators
 export const { resetError, resetSuccess, setPage, setLimit, setApplyingFor } =
   jobSlice.actions;
 
