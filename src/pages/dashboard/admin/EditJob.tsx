@@ -1,8 +1,20 @@
 import { Box, Title } from "@mantine/core";
 import JobForm from "@/components/forms/JobForm";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { useEffect } from "react";
+import {
+  fetchJob,
+  resetError,
+  resetSuccess,
+  updateJob,
+} from "@/store/job/jobSlice";
+import toast from "react-hot-toast";
 
 type Props = {};
 type FormValues = {
+  _id?: string;
   companyName: string;
   position: string;
   contract: string;
@@ -10,24 +22,65 @@ type FormValues = {
 };
 
 const EditJob = ({}: Props) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    job: jobToEdit,
+    loading,
+    error,
+    success,
+  } = useSelector((state: RootState) => state.job);
+
   const initialValues = {
-    companyName: "XYZ Inc.",
-    position: "Software Engineer",
-    contract: "Full time",
-    location: "New York",
+    companyName: "",
+    position: "",
+    contract: "",
+    location: "",
+    ...jobToEdit,
   };
 
-  const handleSubmit = (data: FormValues) => {
-    console.log("edit job data", data);
+  const handleSubmit = ({ _id, ...jobData }: FormValues) => {
+    if (id) {
+      dispatch(updateJob({ id, jobData }));
+    }
   };
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchJob(id));
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+
+    if (success && !loading) {
+      toast.success("Job updated successfully");
+      navigate("/dashboard/jobs");
+    }
+
+    return () => {
+      dispatch(resetError());
+      dispatch(resetSuccess());
+    };
+  }, [error, loading]);
 
   return (
     <Box p={"md"} maw={"1024px"} mx={"auto"}>
       <Title order={2} pb={"md"}>
-        Edit job
+        Edit job {loading}
       </Title>
       <Box>
-        <JobForm initialValues={initialValues} handleSubmit={handleSubmit} />
+        {Object.keys(jobToEdit).length > 0 && (
+          <JobForm
+            initialValues={initialValues}
+            handleSubmit={handleSubmit}
+            loading={loading}
+          />
+        )}
       </Box>
     </Box>
   );

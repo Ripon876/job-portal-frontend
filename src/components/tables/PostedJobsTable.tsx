@@ -1,49 +1,68 @@
 import { Pagination, Box, Button, Menu, rem } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Ellipsis, Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import DeleteModal from "../modals/DeleteModal";
-import JobsTable, { Job } from "./JobsTable";
+import JobsTable from "./JobsTable";
+import { AppDispatch, RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteJob,
+  fetchPostedJobs,
+  Job,
+  resetError,
+  resetSuccess,
+  setPage,
+} from "@/store/job/jobSlice";
+import toast from "react-hot-toast";
 
 const PostedJobsTable = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { jobs, meta, error, success, loading } = useSelector(
+    (state: RootState) => state.job
+  );
+  const page = useSelector((state: RootState) => state.job.meta.page);
   const [opened, { open, close }] = useDisclosure(false);
-  const jobs: Job[] = [
-    {
-      id: 1,
-      companyName: "Acme Corp",
-      position: "Software Engineer",
-      contract: "Full time",
-      location: "New York",
-    },
-    {
-      id: 2,
-      companyName: "Globex Inc",
-      position: "Data Scientist",
-      contract: "Part time",
-      location: "San Francisco",
-    },
-    {
-      id: 3,
-      companyName: "Hooli",
-      position: "UX Designer",
-      contract: "Full time",
-      location: "Austin",
-    },
-    {
-      id: 4,
-      companyName: "Umbrella Corp",
-      position: "Network Engineer",
-      contract: "Full time",
-      location: "Seattle",
-    },
-  ];
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  const handleDelete = (job?: any) => {
-    console.log("delete job", job);
+  const setCurrentPage = (page: number) => {
+    dispatch(setPage(page));
+  };
+
+  const openDeleteModal = (job: Job) => {
+    setSelectedJob(job);
+    open();
+  };
+
+  const handleDelete = () => {
+    if (selectedJob) {
+      dispatch(deleteJob(selectedJob._id));
+    }
+
     close();
   };
+
+  useEffect(() => {
+    dispatch(fetchPostedJobs());
+  }, [page]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+
+    if (success && !loading) {
+      toast.success("Job deleted successfully");
+      navigate("/dashboard/jobs");
+    }
+
+    return () => {
+      dispatch(resetError());
+      dispatch(resetSuccess());
+    };
+  }, [error, loading]);
 
   const Actions = ({ job }: { job: any }) => {
     return (
@@ -57,14 +76,14 @@ const PostedJobsTable = () => {
           <Menu.Item
             leftSection={<Pencil style={{ width: rem(14), height: rem(14) }} />}
             component={Link}
-            to={`/dashboard/jobs/${job.id}/edit`}
+            to={`/dashboard/jobs/${job._id}/edit`}
           >
             Edit
           </Menu.Item>
           <Menu.Item
             leftSection={<Trash2 style={{ width: rem(14), height: rem(14) }} />}
             color="red"
-            onClick={() => open()}
+            onClick={() => openDeleteModal(job)}
           >
             Delete
           </Menu.Item>
@@ -80,11 +99,18 @@ const PostedJobsTable = () => {
         close={close}
         title="Delete Job"
         confirm={handleDelete}
+        loading={loading}
       />
       <JobsTable jobs={jobs} Actions={Actions} />
-      <Box display="flex" style={{ justifyContent: "end" }}>
-        <Pagination total={10} value={currentPage} onChange={setCurrentPage} />
-      </Box>
+      {jobs.length > 0 && (
+        <Box display="flex" style={{ justifyContent: "end" }}>
+          <Pagination
+            total={Math.ceil(meta.total / meta.limit)}
+            value={meta.page}
+            onChange={setCurrentPage}
+          />
+        </Box>
+      )}
     </Box>
   );
 };

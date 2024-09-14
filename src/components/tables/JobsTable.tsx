@@ -1,12 +1,5 @@
+import { Job } from "@/store/job/jobSlice";
 import { Table } from "@mantine/core";
-
-export type Job = {
-  id: number;
-  companyName: string;
-  position: string;
-  contract: string;
-  location: string;
-};
 
 type Props = {
   jobs: Job[];
@@ -15,7 +8,7 @@ type Props = {
 
 const JobsTable = ({ jobs, Actions }: Props) => {
   const rows = jobs.map((job) => (
-    <Table.Tr key={job.id}>
+    <Table.Tr key={job._id}>
       <Table.Td>{job.companyName}</Table.Td>
       <Table.Td>{job.position}</Table.Td>
       <Table.Td>{job.contract}</Table.Td>

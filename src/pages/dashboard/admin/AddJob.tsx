@@ -1,5 +1,11 @@
 import { Box, Title } from "@mantine/core";
 import JobForm from "@/components/forms/JobForm";
+import { AppDispatch, RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { postJob, resetError, resetSuccess } from "@/store/job/jobSlice";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 type Props = {};
 type FormValues = {
@@ -10,6 +16,11 @@ type FormValues = {
 };
 
 const AddJob = ({}: Props) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, error, success } = useSelector(
+    (state: RootState) => state.job
+  );
   const initialValues = {
     companyName: "",
     position: "",
@@ -19,7 +30,24 @@ const AddJob = ({}: Props) => {
 
   const handleSubmit = (data: FormValues) => {
     console.log("add job data", data);
+    dispatch(postJob(data));
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+
+    if (success && !loading) {
+      toast.success("Job posted successfully");
+      navigate("/dashboard/jobs");
+    }
+
+    return () => {
+      dispatch(resetError());
+      dispatch(resetSuccess());
+    };
+  }, [error, loading]);
 
   return (
     <Box p={"md"} maw={"1024px"} mx={"auto"}>
@@ -27,7 +55,11 @@ const AddJob = ({}: Props) => {
         Add new job
       </Title>
       <Box>
-        <JobForm initialValues={initialValues} handleSubmit={handleSubmit} />
+        <JobForm
+          initialValues={initialValues}
+          handleSubmit={handleSubmit}
+          loading={loading}
+        />
       </Box>
     </Box>
   );

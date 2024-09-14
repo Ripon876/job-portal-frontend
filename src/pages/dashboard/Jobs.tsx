@@ -1,18 +1,20 @@
 import JobsListing from "@/components/listings/JobsListing";
-// import AdminJobsTable from "@/components/tables/AdminJobsTable";
+import { RootState } from "@/store/store";
+import PostedJobsTable from "@/components/tables/PostedJobsTable";
 import { Box, Title } from "@mantine/core";
+import { useSelector } from "react-redux";
 
 type Props = {};
 
 const Jobs = ({}: Props) => {
+  const user = useSelector((state: RootState) => state.auth.user);
+
   return (
     <Box p={"md"} maw={"1024px"} mx={"auto"}>
       <Title order={2} pb={"md"}>
-        Jobs
+        {user?.role === "admin" ? "Posted Jobs" : "Jobs"}
       </Title>
-      {/* TODO: render compoennt based on user role */}
-      {/* <AdminJobsTable /> */}
-      <JobsListing />
+      {user?.role === "admin" ? <PostedJobsTable /> : <JobsListing />}
     </Box>
   );
 };

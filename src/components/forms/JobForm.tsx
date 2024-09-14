@@ -11,9 +11,10 @@ type FormValues = {
 type JobFormProps = {
   initialValues: FormValues;
   handleSubmit: (values: FormValues) => void;
+  loading: boolean;
 };
 
-const JobForm = ({ initialValues, handleSubmit }: JobFormProps) => {
+const JobForm = ({ initialValues, handleSubmit, loading }: JobFormProps) => {
   const { values, errors, setFieldValue, onSubmit } = useForm<FormValues>({
     initialValues,
     validate: {
@@ -59,6 +60,7 @@ const JobForm = ({ initialValues, handleSubmit }: JobFormProps) => {
           value={values.contract}
           onChange={(value) => setFieldValue("contract", value || "")}
           error={errors.contract}
+          withCheckIcon={false}
           radius="md"
         />
 
@@ -76,7 +78,7 @@ const JobForm = ({ initialValues, handleSubmit }: JobFormProps) => {
       </Stack>
 
       <Group justify="space-between" mt="xl">
-        <Button type="submit" radius="xl" size="md">
+        <Button type="submit" radius="xl" size="md" loading={loading}>
           Save
         </Button>
       </Group>
