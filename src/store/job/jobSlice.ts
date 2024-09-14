@@ -162,11 +162,15 @@ const jobSlice = createSlice({
     resetSuccess(state) {
       state.success = false;
     },
+    resetJobs(state) {
+      state.jobs = [];
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchJob.fulfilled, (state, action: PayloadAction<Job>) => {
         state.job = action.payload;
+        state.loading = false;
       })
       .addCase(fetchJob.rejected, (state, action) => {
         state.error = action.error.message ?? "Failed to fetch job";
@@ -258,8 +262,14 @@ const jobSlice = createSlice({
 });
 
 // Export the action creators
-export const { resetError, resetSuccess, setPage, setLimit, setApplyingFor } =
-  jobSlice.actions;
+export const {
+  resetError,
+  resetSuccess,
+  setPage,
+  setLimit,
+  setApplyingFor,
+  resetJobs,
+} = jobSlice.actions;
 
 // Export the reducer
 export default jobSlice.reducer;

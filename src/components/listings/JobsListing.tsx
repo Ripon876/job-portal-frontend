@@ -10,6 +10,7 @@ import {
   fetchJobs,
   Job,
   resetError,
+  resetJobs,
   resetSuccess,
   setApplyingFor,
   setLimit,
@@ -101,6 +102,12 @@ const JobsListing = ({ appliedOnly = false }: Props) => {
       dispatch(resetSuccess());
     };
   }, [error, loading]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetJobs());
+    };
+  }, []);
 
   return (
     <Box pb={"lg"} mb={"lg"}>
