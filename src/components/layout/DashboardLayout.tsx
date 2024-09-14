@@ -31,7 +31,7 @@ const DashboardLayout = ({}: Props) => {
         link: "/dashboard/jobs/add",
         icon: ListPlus,
       });
-    } else {
+    } else if (user?.role === "user") {
       navItems.push({
         label: "Applied Jobs",
         link: "/dashboard/jobs/applied",

@@ -12,10 +12,12 @@ const Jobs = ({}: Props) => {
   return (
     <Box p={"md"} maw={"1024px"} mx={"auto"}>
       <Title order={2} pb={"md"}>
-        {user?.role === "admin" ? "Posted Jobs" : "Jobs"}
+        {user?.role === "admin" && "Posted Jobs"}
+        {user?.role === "user" && "Jobs"}
       </Title>
       {/* Render the appropriate component based on the user's role */}
-      {user?.role === "admin" ? <PostedJobsTable /> : <JobsListing />}
+      {user?.role === "admin" && <PostedJobsTable />}
+      {user?.role === "user" && <JobsListing />}
     </Box>
   );
 };
