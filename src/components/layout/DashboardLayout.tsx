@@ -1,13 +1,23 @@
-import { List, ListPlus } from "lucide-react";
+import { List, ListPlus, LogOut } from "lucide-react";
 import { useDisclosure } from "@mantine/hooks";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { AppShell, Burger, Group, NavLink, Title } from "@mantine/core";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import {
+  AppShell,
+  Box,
+  Burger,
+  Flex,
+  Group,
+  NavLink,
+  Title,
+} from "@mantine/core";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { logoutUser } from "@/store/auth/authSlice";
 
 type Props = {};
 
 const DashboardLayout = ({}: Props) => {
+  const dispatch = useDispatch<AppDispatch>();
   const [opened, { toggle }] = useDisclosure();
   const { user } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
@@ -43,6 +53,10 @@ const DashboardLayout = ({}: Props) => {
     ));
   };
 
+  const logout = () => {
+    dispatch(logoutUser());
+  };
+
   return (
     <AppShell
       header={{ height: 60 }}
@@ -55,7 +69,18 @@ const DashboardLayout = ({}: Props) => {
           <Title order={2}>Job Portal</Title>
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p="md">{items()}</AppShell.Navbar>
+      <AppShell.Navbar p="md">
+        <Flex direction="column" justify={"space-between"} h={"100%"}>
+          <Box>{items()}</Box>
+          <NavLink
+            label="Logout"
+            leftSection={<LogOut size="1rem" strokeWidth="1.5" />}
+            fz={"lg"}
+            fw={500}
+            onClick={logout}
+          />
+        </Flex>
+      </AppShell.Navbar>
       <AppShell.Main>
         <Outlet />
       </AppShell.Main>

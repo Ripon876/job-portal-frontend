@@ -90,14 +90,14 @@ export const fetchUser = createAsyncThunk(
   }
 );
 
+export const logoutUser = createAsyncThunk("auth/logout", async () => {
+  await apiClient.get("/auth/logout");
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logout(state) {
-      state.user = null;
-      state.error = null;
-    },
     resetError(state) {
       state.error = null;
     },
@@ -151,11 +151,23 @@ const authSlice = createSlice({
       .addCase(fetchUser.rejected, (state, action) => {
         state.loading = false;
         state.error =
-          (action.payload as ErrorPayload).message || "Failed to fetch user";
+          (action.payload as ErrorPayload).message || "Please login first";
+      })
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+      })
+      .addCase(logoutUser.rejected, (state) => {
+        state.loading = false;
+        state.error = "Failed to logout";
       });
   },
 });
 
-export const { logout, resetError, resetSuccess } = authSlice.actions;
+export const { resetError, resetSuccess } = authSlice.actions;
 
 export default authSlice.reducer;
