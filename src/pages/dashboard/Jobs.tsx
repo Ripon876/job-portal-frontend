@@ -14,6 +14,7 @@ const Jobs = ({}: Props) => {
       <Title order={2} pb={"md"}>
         {user?.role === "admin" ? "Posted Jobs" : "Jobs"}
       </Title>
+      {/* Render the appropriate component based on the user's role */}
       {user?.role === "admin" ? <PostedJobsTable /> : <JobsListing />}
     </Box>
   );

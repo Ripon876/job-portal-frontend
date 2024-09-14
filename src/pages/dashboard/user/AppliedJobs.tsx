@@ -7,7 +7,9 @@ const AppliedJobs = () => {
       <Title order={2} pb={"md"}>
         Applied Jobs
       </Title>
-      <JobsListing appliedOnly/>
+
+      {/* Render JobsListing component with appliedOnly prop to show only the applied jobs by user */}
+      <JobsListing appliedOnly />
     </Box>
   );
 };

@@ -28,8 +28,8 @@ const AddJob = ({}: Props) => {
     location: "",
   };
 
+  // Dispatch postJob action with job data to add a new job
   const handleSubmit = (data: FormValues) => {
-    console.log("add job data", data);
     dispatch(postJob(data));
   };
 

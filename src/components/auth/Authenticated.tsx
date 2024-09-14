@@ -31,6 +31,7 @@ const Authenticated = ({}: {}) => {
     }
   }, [isAuthenticated, error]);
 
+  // Show loading screen until fetching user
   if (loading) {
     return (
       <Flex justify={"center"} align="center" h="100vh" mih={"100vh"}>
@@ -38,6 +39,7 @@ const Authenticated = ({}: {}) => {
       </Flex>
     );
   } else {
+    // Render Outlet if user is authenticated otherwise redirect to login
     return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
   }
 };

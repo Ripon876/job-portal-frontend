@@ -10,7 +10,7 @@ import {
   Box,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,6 +30,7 @@ const Login = (props: Props) => {
   const { isAuthenticated, user, loading, error } = useSelector(
     (state: RootState) => state.auth
   );
+  const [submited, setSubmited] = useState(false);
   const { values, errors, onSubmit, setFieldValue } = useForm<FormValues>({
     initialValues: {
       email: "",
@@ -46,12 +47,13 @@ const Login = (props: Props) => {
 
   const handleSubmit = (data: FormValues) => {
     dispatch(login(data));
+    setSubmited(true);
   };
 
   useEffect(() => {
     dispatch(resetError());
-    
-    if (error && !loading) {
+
+    if (submited && error && !loading) {
       toast.error(error);
     }
 

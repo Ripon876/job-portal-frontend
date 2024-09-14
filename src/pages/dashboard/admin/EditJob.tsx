@@ -40,12 +40,14 @@ const EditJob = ({}: Props) => {
     ...jobToEdit,
   };
 
+  // Dispatch the updateJob action with job data and id to update the job
   const handleSubmit = ({ _id, ...jobData }: FormValues) => {
     if (id) {
       dispatch(updateJob({ id, jobData }));
     }
   };
 
+  // Fetch the job details to edit
   useEffect(() => {
     if (id) {
       dispatch(fetchJob(id));

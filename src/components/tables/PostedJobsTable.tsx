@@ -27,15 +27,18 @@ const PostedJobsTable = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
+  // Update Page number in store
   const setCurrentPage = (page: number) => {
     dispatch(setPage(page));
   };
 
+  // Store Job to be deleted and open delete modal
   const openDeleteModal = (job: Job) => {
     setSelectedJob(job);
     open();
   };
 
+  // Delete Job
   const handleDelete = () => {
     if (selectedJob) {
       dispatch(deleteJob(selectedJob._id));
@@ -44,6 +47,7 @@ const PostedJobsTable = () => {
     close();
   };
 
+  // Fetch posted Jobs on page change
   useEffect(() => {
     dispatch(fetchJobs({ postedOnly: 1 }));
   }, [page]);
@@ -64,6 +68,7 @@ const PostedJobsTable = () => {
     };
   }, [error, loading]);
 
+  // Actions (Edit & Delete) component for PostedJobsTable
   const Actions = ({ job }: { job: any }) => {
     return (
       <Menu withArrow shadow="md" offset={-5}>

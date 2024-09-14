@@ -36,6 +36,7 @@ const JobCard = ({ job, apply, appliedOnly = false }: Props) => {
         </Badge>
       </Group>
 
+      {/* Disable the apply button if the job is already applied */}
       <Button
         color="blue"
         mt="md"

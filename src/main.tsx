@@ -11,7 +11,7 @@ import { Toaster } from "react-hot-toast";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <MantineProvider>
+    <MantineProvider defaultColorScheme="light">
       <Provider store={store}>
         <RouterProvider router={router} />
         <Toaster position="top-right" />

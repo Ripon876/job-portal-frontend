@@ -142,6 +142,7 @@ export const fetchAppliedJobs = createAsyncThunk<Job[]>(
   }
 );
 
+// Job slice
 const jobSlice = createSlice({
   name: "jobs",
   initialState,
@@ -163,22 +164,6 @@ const jobSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addMatcher(
-      isAnyOf(
-        fetchJob.pending,
-        fetchJobs.pending,
-        postJob.pending,
-        updateJob.pending,
-        deleteJob.pending,
-        applyForJob.pending
-      ),
-      (state) => {
-        state.loading = true;
-        state.success = false;
-        state.error = null;
-      }
-    );
-
     builder
       .addCase(fetchJob.fulfilled, (state, action: PayloadAction<Job>) => {
         state.job = action.payload;
@@ -253,6 +238,22 @@ const jobSlice = createSlice({
         state.error = null;
         state.appliedJobs = action.payload?.map((job) => job._id);
       });
+
+    builder.addMatcher(
+      isAnyOf(
+        fetchJob.pending,
+        fetchJobs.pending,
+        postJob.pending,
+        updateJob.pending,
+        deleteJob.pending,
+        applyForJob.pending
+      ),
+      (state) => {
+        state.loading = true;
+        state.success = false;
+        state.error = null;
+      }
+    );
   },
 });
 

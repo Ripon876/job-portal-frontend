@@ -31,6 +31,7 @@ const UnAuthenticated = ({}: {}) => {
     }
   }, [isAuthenticated, error]);
 
+  // Show loading screen until fetching user
   if (loading) {
     return (
       <Flex justify={"center"} align="center" h="100vh" mih={"100vh"}>
@@ -38,6 +39,7 @@ const UnAuthenticated = ({}: {}) => {
       </Flex>
     );
   } else {
+    // Render Outlet if user is not authenticated otherwise redirect to jobs page
     return !isAuthenticated ? (
       <Outlet />
     ) : (

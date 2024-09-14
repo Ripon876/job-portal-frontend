@@ -40,6 +40,7 @@ const JobsListing = ({ appliedOnly = false }: Props) => {
     dispatch(setPage(page));
   };
 
+  // Update the search filters when user apllies filters or clears the filters
   const updateSearchFitlers = async (clear = false) => {
     if (clear) {
       setSearchFilters({
@@ -51,15 +52,18 @@ const JobsListing = ({ appliedOnly = false }: Props) => {
     }
   };
 
+  // Store Job that is being applied for & dispatch applyForJob action
   const apply = (job: Job) => {
     dispatch(setApplyingFor(job._id));
     dispatch(applyForJob({ id: job._id }));
   };
 
+  // Set the limit to 9 for the job listing
   useEffect(() => {
     dispatch(setLimit(9));
   }, []);
 
+  // Fetch Jobs with search queries when page or search query changes
   useEffect(() => {
     const query: Record<string, any> = {
       ...searchFitlers,
@@ -72,6 +76,7 @@ const JobsListing = ({ appliedOnly = false }: Props) => {
     dispatch(fetchJobs(query));
   }, [page, searchQuery, searchFitlers]);
 
+  // Fetch the applied jobs upon mount to store them in the store.
   useEffect(() => {
     if (!appliedOnly) {
       dispatch(fetchAppliedJobs());
@@ -88,7 +93,7 @@ const JobsListing = ({ appliedOnly = false }: Props) => {
     }
 
     if (success && !loading) {
-      toast.success("Apply for job successfully");
+      toast.success("Applied for job successfully");
     }
 
     return () => {
@@ -99,6 +104,7 @@ const JobsListing = ({ appliedOnly = false }: Props) => {
 
   return (
     <Box pb={"lg"} mb={"lg"}>
+      {/* Searchbar with search and fitler options */}
       <JobsListingSearchBar
         searchQuery={query}
         setSearchQuery={setQuery}
@@ -115,7 +121,7 @@ const JobsListing = ({ appliedOnly = false }: Props) => {
             </Text>
           </Flex>
         )}
-        {/* TODO: render job cards dynamically */}
+
         <Grid>
           {jobs.map((job) => (
             <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
@@ -123,6 +129,8 @@ const JobsListing = ({ appliedOnly = false }: Props) => {
             </Grid.Col>
           ))}
         </Grid>
+
+        {/* Pagination */}
         {jobs.length > 0 && (
           <Box display="flex" style={{ justifyContent: "center" }} my={"3rem"}>
             <Pagination

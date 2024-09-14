@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import { apiClient } from "@/apiClient";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -24,6 +24,7 @@ const initialState: AuthState = {
   success: false,
 };
 
+// Sign up action
 export const signup = createAsyncThunk(
   "auth/signup",
   async (
@@ -47,6 +48,7 @@ export const signup = createAsyncThunk(
   }
 );
 
+// Login action
 export const login = createAsyncThunk(
   "auth/login",
   async (
@@ -70,6 +72,7 @@ export const login = createAsyncThunk(
   }
 );
 
+// Fetch the current user
 export const fetchUser = createAsyncThunk(
   "auth/fetchUser",
   async (_, { rejectWithValue }) => {
@@ -90,6 +93,7 @@ export const fetchUser = createAsyncThunk(
   }
 );
 
+// Logout action
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   await apiClient.get("/auth/logout");
 });
@@ -107,10 +111,6 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(login.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.data;
@@ -124,10 +124,6 @@ const authSlice = createSlice({
         state.error =
           paylod?.errors?.[0].msg || paylod.message || "Login failed";
       })
-      .addCase(signup.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(signup.fulfilled, (state) => {
         state.loading = false;
         state.success = true;
@@ -139,10 +135,7 @@ const authSlice = createSlice({
         state.error =
           paylod?.errors?.[0].msg || paylod.message || "Signup failed";
       })
-      .addCase(fetchUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
+
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.data;
@@ -151,11 +144,7 @@ const authSlice = createSlice({
       .addCase(fetchUser.rejected, (state, action) => {
         state.loading = false;
         state.error =
-          (action.payload as ErrorPayload).message || "Please login first";
-      })
-      .addCase(logoutUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+          (action.payload as ErrorPayload)?.message || "Please login first";
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.loading = false;
@@ -165,9 +154,24 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = "Failed to logout";
       });
+
+    builder.addMatcher(
+      isAnyOf(
+        login.pending,
+        signup.pending,
+        fetchUser.pending,
+        logoutUser.pending
+      ),
+      (state) => {
+        state.loading = true;
+        state.error = null;
+      }
+    );
   },
 });
 
+// Export the action creators
 export const { resetError, resetSuccess } = authSlice.actions;
 
+// Export the reducer
 export default authSlice.reducer;
