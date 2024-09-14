@@ -1,3 +1,5 @@
+import { resetError, resetSuccess, signup } from "@/store/auth/authSlice";
+import { AppDispatch, RootState } from "@/store/store";
 import {
   TextInput,
   PasswordInput,
@@ -5,29 +7,34 @@ import {
   Paper,
   Group,
   Button,
-  Checkbox,
   Anchor,
   Stack,
   Box,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 type Props = {};
 type FormValues = {
   email: string;
   name: string;
   password: string;
-  terms: boolean;
 };
 
 const Signup = (props: Props) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, success, error } = useSelector(
+    (state: RootState) => state.auth
+  );
   const { values, errors, onSubmit, setFieldValue } = useForm<FormValues>({
     initialValues: {
       email: "",
       name: "",
       password: "",
-      terms: false,
     },
     validate: {
       name: (val) => (!val ? "Name is required" : null),
@@ -40,8 +47,24 @@ const Signup = (props: Props) => {
   });
 
   const handleSubmit = (data: FormValues) => {
-    console.log("signup data", data);
+    dispatch(signup(data));
   };
+
+  useEffect(() => {
+    if (error && !loading) {
+      toast.error(error);
+    }
+
+    if (success && !loading) {
+      toast.success("Signup successful");
+      navigate("/login");
+    }
+
+    return () => {
+      dispatch(resetError());
+      dispatch(resetSuccess());
+    };
+  }, [error, success]);
 
   return (
     <Box className="blurry-background">
@@ -88,15 +111,6 @@ const Signup = (props: Props) => {
                 "Password should include at least 6 characters"
               }
               radius="md"
-            />
-
-            <Checkbox
-              required
-              label="I accept terms and conditions"
-              checked={values.terms}
-              onChange={(event) =>
-                setFieldValue("terms", event.currentTarget.checked)
-              }
             />
           </Stack>
 
