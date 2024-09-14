@@ -49,8 +49,15 @@ const DashboardLayout = ({}: Props) => {
         leftSection={<item.icon size="1rem" strokeWidth="1.5" />}
         fz={"lg"}
         fw={500}
+        onClick={hideMenu}
       />
     ));
+  };
+
+  const hideMenu = () => {
+    if (opened) {
+      toggle();
+    }
   };
 
   const logout = () => {
