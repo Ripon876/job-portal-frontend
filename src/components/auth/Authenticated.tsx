@@ -1,23 +1,45 @@
+import { fetchUser, resetError } from "@/store/auth/authSlice";
+import { AppDispatch, RootState } from "@/store/store";
+import { Flex, Loader } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 
-const Authenticated = ({
-  requiredRoles = [],
-}: {
-  requiredRoles?: string[];
-}) => {
-  // TODO: Check if user is authenticated
-  const isAuthenticated = true;
-  const userRole = "admin";
-
-  const hasRequiredRole =
-    requiredRoles.length === 0 ||
-    requiredRoles.some((role) => role === userRole);
-
-  return isAuthenticated && hasRequiredRole ? (
-    <Outlet />
-  ) : (
-    <Navigate to="/login" replace />
+const Authenticated = ({}: {}) => {
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+  const { isAuthenticated, user, error } = useSelector(
+    (state: RootState) => state.auth
   );
+
+  useEffect(() => {
+    if (!user) {
+      dispatch(fetchUser());
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLoading(false);
+    }
+
+    if (error) {
+      dispatch(resetError());
+      setLoading(false);
+    }
+  }, [isAuthenticated, error]);
+
+  if (loading) {
+    return (
+      <Flex justify={"center"} align="center" h="100vh" mih={"100vh"}>
+        <Loader color="blue" />
+      </Flex>
+    );
+  } else {
+    return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+  }
 };
 
 export default Authenticated;
