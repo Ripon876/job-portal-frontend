@@ -7,22 +7,29 @@ import AppliedJobs from "@/pages/dashboard/user/AppliedJobs";
 import Authenticated from "@/components/auth/Authenticated";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { createBrowserRouter, Navigate } from "react-router-dom";
+import UnAuthenticated from "@/components/auth/UnAuthenticated";
+import RoleGuard from "@/components/auth/RoleGuard";
 
 const router: any = createBrowserRouter([
   {
-    path: "/",
-    element: <Navigate to={"/login"} />,
+    element: <UnAuthenticated />,
+    children: [
+      {
+        path: "/",
+        element: <Navigate to={"/login"} />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/signup",
+        element: <Signup />,
+      },
+    ],
   },
   {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/signup",
-    element: <Signup />,
-  },
-  {
-    element: <Authenticated requiredRoles={["admin", "user"]} />,
+    element: <Authenticated />,
     children: [
       {
         path: "/dashboard",
@@ -33,7 +40,7 @@ const router: any = createBrowserRouter([
             element: <Jobs />,
           },
           {
-            element: <Authenticated requiredRoles={["admin"]} />,
+            element: <RoleGuard requiredRoles={["admin"]} />,
             children: [
               {
                 path: "jobs/add",
@@ -46,7 +53,7 @@ const router: any = createBrowserRouter([
             ],
           },
           {
-            element: <Authenticated requiredRoles={["user"]} />,
+            element: <RoleGuard requiredRoles={["user"]} />,
             children: [
               {
                 path: "jobs/applied",
